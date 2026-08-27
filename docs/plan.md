@@ -10,9 +10,11 @@
 
 ## Semaine 2 — Orchestration & qualité
 
-- Étendre le DLT pipeline : Silver → Gold (agrégations horaires : disponibilité moyenne par station, vitesse moyenne par boucle CRITER).
-- Databricks Workflows : planifier l'exécution (ex. toutes les 15 min pour Vélo'v).
-- Ajouter des règles de qualité DLT (`expect_or_drop` : valeurs négatives, stations hors zone, timestamps aberrants).
+Silver → Gold et les règles `expect_or_drop` sont déjà faits (avance prise en Semaine 1). Reste : orchestration planifiée.
+
+**Checklist détaillée, autonome, clic-par-clic :** [`semaine2_checklist.md`](semaine2_checklist.md).
+
+- Databricks Workflows : planifier l'exécution (Vélo'v toutes les 30 min, CRITER hebdomadaire — c'est une stats de référence annuelle, pas un flux temps réel).
 - **Livrable :** pipeline automatisé, historique d'exécution visible, qualité contrôlée.
 
 ## Semaine 3 — ML & mise en production

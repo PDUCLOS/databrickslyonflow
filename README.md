@@ -4,6 +4,9 @@ Preuve concrète de compétences Databricks (Delta Lake, Delta Live Tables, Unit
 
 Ce projet **ne remplace pas** [LyonFlow](https://github.com/PDUCLOS) (PostgreSQL/PostGIS, Airflow, MinIO, MLflow, Evidently AI, FastAPI/Streamlit) — il le complète avec une couche Databricks démontrable, sur un dépôt séparé.
 
+**Pourquoi ce projet, où on en est, comment le valoriser :** [`docs/vision.md`](docs/vision.md).
+**Prochaine étape autonome (Semaine 2) :** [`docs/semaine2_checklist.md`](docs/semaine2_checklist.md).
+
 ---
 
 ## Sources de données
