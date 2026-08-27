@@ -17,7 +17,7 @@ from pyspark.sql import functions as F
 # COMMAND ----------
 
 @dlt.table(
-    name="velov_clean",
+    name="silver.velov_clean",
     comment="Snapshots Vélo'v typés, dédupliqués, stations actives uniquement.",
 )
 @dlt.expect_or_drop("valid_capacity", "capacity IS NOT NULL AND capacity >= 0")
@@ -40,7 +40,7 @@ def velov_clean():
 # COMMAND ----------
 
 @dlt.table(
-    name="criter_clean",
+    name="silver.criter_clean",
     comment="Capteurs CRITER typés, dédupliqués, statistiques de référence valides.",
 )
 @dlt.expect_or_drop("valid_sensor_id", "identifiantptm IS NOT NULL")

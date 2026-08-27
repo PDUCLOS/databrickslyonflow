@@ -16,12 +16,12 @@ from pyspark.sql import functions as F
 # COMMAND ----------
 
 @dlt.table(
-    name="velov_hourly_agg",
+    name="gold.velov_hourly_agg",
     comment="Disponibilité moyenne Vélo'v par station et par heure.",
 )
 def velov_hourly_agg():
     return (
-        dlt.read("velov_clean")
+        dlt.read("silver.velov_clean")
         .withColumn("hour", F.date_trunc("hour", "ingested_at"))
         .groupBy("station_id", "name", "hour")
         .agg(
@@ -42,7 +42,7 @@ def velov_hourly_agg():
 # COMMAND ----------
 
 @dlt.table(
-    name="criter_site_stats",
+    name="gold.criter_site_stats",
     comment="Dernier snapshot de statistiques de référence par capteur CRITER.",
 )
 def criter_site_stats():
@@ -50,7 +50,7 @@ def criter_site_stats():
 
     w = Window.partitionBy("identifiantptm").orderBy(F.desc("ingested_at"))
     return (
-        dlt.read("criter_clean")
+        dlt.read("silver.criter_clean")
         .withColumn("rn", F.row_number().over(w))
         .filter("rn = 1")
         .drop("rn")
