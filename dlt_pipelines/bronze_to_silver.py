@@ -41,13 +41,14 @@ def velov_clean():
 
 @dlt.table(
     name="criter_clean",
-    comment="Comptages trafic CRITER typés, dédupliqués, valeurs aberrantes exclues.",
+    comment="Capteurs CRITER typés, dédupliqués, statistiques de référence valides.",
 )
-@dlt.expect_or_drop("valid_flow", "debit IS NULL OR debit >= 0")
-@dlt.expect_or_drop("valid_speed", "vitesse IS NULL OR (vitesse >= 0 AND vitesse < 200)")
+@dlt.expect_or_drop("valid_sensor_id", "identifiantptm IS NOT NULL")
+@dlt.expect_or_drop("valid_flow", "moyennejoursouvrable IS NULL OR moyennejoursouvrable >= 0")
+@dlt.expect_or_drop("valid_peak_flow", "debithorairemax IS NULL OR debithorairemax >= 0")
 @dlt.expect_or_drop("valid_timestamp", "ingested_at IS NOT NULL")
 def criter_clean():
     return (
         dlt.read_stream("lyonflow.bronze.criter_raw")
-        .dropDuplicates(["identifiant_arc", "ingested_at"])
+        .dropDuplicates(["identifiantptm", "ingested_at"])
     )

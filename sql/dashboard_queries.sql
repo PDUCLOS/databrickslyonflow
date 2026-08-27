@@ -35,12 +35,15 @@ FROM lyonflow.gold.velov_hourly_agg
 GROUP BY HOUR(hour)
 ORDER BY heure_journee;
 
--- 4. Vitesse moyenne trafic par boucle CRITER, dernières 24h
+-- 4. Capteurs CRITER avec le débit horaire max le plus élevé (année de référence)
 SELECT
-  identifiant_arc,
-  hour,
-  avg_debit,
-  avg_vitesse
-FROM lyonflow.gold.criter_hourly_agg
-WHERE hour >= current_timestamp() - INTERVAL 24 HOURS
-ORDER BY hour DESC;
+  identifiantptm,
+  nom,
+  positionnement,
+  moyennejoursouvrable,
+  debithorairemax,
+  horairedebitmax,
+  anneereference
+FROM lyonflow.gold.criter_site_stats
+ORDER BY debithorairemax DESC
+LIMIT 20;

@@ -33,22 +33,30 @@ def velov_hourly_agg():
     )
 
 # COMMAND ----------
-# MAGIC %md ## CRITER — Gold : trafic moyen par boucle / heure
+# MAGIC %md ## CRITER — Gold : dernier snapshot par capteur
+# MAGIC
+# MAGIC Les statistiques CRITER sont des références annuelles (`anneereference`),
+# MAGIC pas un flux temps réel — le Gold retient donc le dernier snapshot ingéré
+# MAGIC par capteur plutôt qu'une agrégation horaire.
 
 # COMMAND ----------
 
 @dlt.table(
-    name="criter_hourly_agg",
-    comment="Débit et vitesse moyens par boucle de comptage et par heure.",
+    name="criter_site_stats",
+    comment="Dernier snapshot de statistiques de référence par capteur CRITER.",
 )
-def criter_hourly_agg():
+def criter_site_stats():
+    from pyspark.sql.window import Window
+
+    w = Window.partitionBy("identifiantptm").orderBy(F.desc("ingested_at"))
     return (
         dlt.read("criter_clean")
-        .withColumn("hour", F.date_trunc("hour", "ingested_at"))
-        .groupBy("identifiant_arc", "hour")
-        .agg(
-            F.avg("debit").alias("avg_debit"),
-            F.avg("vitesse").alias("avg_vitesse"),
-            F.count("*").alias("nb_observations"),
+        .withColumn("rn", F.row_number().over(w))
+        .filter("rn = 1")
+        .drop("rn")
+        .select(
+            "identifiantptm", "nom", "positionnement", "typecapteur",
+            "nbvoies", "moyennejoursouvrable", "debithorairemax",
+            "horairedebitmax", "anneereference", "lon", "lat", "ingested_at",
         )
     )

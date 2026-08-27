@@ -31,7 +31,7 @@ lyonflow (catalog)
 │   └── criter_clean      # typé, dédupliqué, valeurs aberrantes exclues
 └── gold
     ├── velov_hourly_agg  # disponibilité moyenne par station / heure
-    └── criter_hourly_agg # vitesse/débit moyen par boucle / heure
+    └── criter_site_stats # dernier snapshot de stats de référence par capteur
 ```
 
 ## Composants Databricks utilisés
