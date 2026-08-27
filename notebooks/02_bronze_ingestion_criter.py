@@ -78,6 +78,13 @@ for f in features:
 
 # COMMAND ----------
 
+# Certains champs (ex. `estvalide`) sont `None` sur l'ensemble des capteurs
+# pour ce batch — Spark ne peut pas inférer le type d'une colonne 100% nulle.
+# On les retire avant createDataFrame plutôt que de forcer un schéma explicite,
+# pour rester robuste si un futur batch a la même colonne partiellement remplie.
+none_cols = {k for k in records[0] if all(r.get(k) is None for r in records)}
+records = [{k: v for k, v in r.items() if k not in none_cols} for r in records]
+
 df = spark.createDataFrame(records)
 df = df.withColumn("ingested_at", F.lit(ingested_at).cast("timestamp")) \
        .withColumn("ingestion_date", F.to_date(F.lit(ingested_at)))
