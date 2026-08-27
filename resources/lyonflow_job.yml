@@ -1,0 +1,25 @@
+resources:
+  jobs:
+    lyonflow_ingestion_job:
+      name: lyonflow-ingestion-and-pipeline
+      schedule:
+        quartz_cron_expression: "0 */15 * * * ?"
+        timezone_id: Europe/Paris
+        pause_status: PAUSED
+      tasks:
+        - task_key: ingest_velov
+          notebook_task:
+            notebook_path: ../notebooks/01_bronze_ingestion_velov.py
+            base_parameters:
+              catalog: ${var.catalog}
+        - task_key: ingest_criter
+          notebook_task:
+            notebook_path: ../notebooks/02_bronze_ingestion_criter.py
+            base_parameters:
+              catalog: ${var.catalog}
+        - task_key: run_dlt_pipeline
+          depends_on:
+            - task_key: ingest_velov
+            - task_key: ingest_criter
+          pipeline_task:
+            pipeline_id: ${resources.pipelines.lyonflow_dlt_pipeline.id}
