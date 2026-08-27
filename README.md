@@ -49,7 +49,7 @@ lyonflow-databricks/
 
 ## Statut d'avancement
 
-- [ ] Semaine 1 — Fondations : Unity Catalog, ingestion Bronze, DLT Bronze→Silver
+- [x] Semaine 1 — Fondations : Unity Catalog, ingestion Bronze, DLT Bronze→Silver→Gold (465 stations Vélo'v, 2799 capteurs CRITER)
 - [ ] Semaine 2 — Orchestration & qualité : DLT Silver→Gold, Workflows, règles `expect_or_drop`
 - [ ] Semaine 3 — ML & mise en production : MLflow Tracking, Model Registry, Model Serving
 - [ ] Semaine 4 — BI & valorisation : Databricks SQL, Genie, README final, résultats chiffrés
