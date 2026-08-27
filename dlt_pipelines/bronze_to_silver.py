@@ -22,7 +22,7 @@ from pyspark.sql import functions as F
 )
 @dlt.expect_or_drop("valid_capacity", "capacity IS NOT NULL AND capacity >= 0")
 @dlt.expect_or_drop("valid_bikes", "num_bikes_available >= 0 AND num_bikes_available <= capacity")
-@dlt.expect_or_drop("station_active", "is_renting = 1 AND is_installed = 1")
+@dlt.expect_or_drop("station_active", "is_renting = true AND is_installed = true")
 @dlt.expect_or_drop("valid_timestamp", "ingested_at IS NOT NULL")
 def velov_clean():
     return (
