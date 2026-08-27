@@ -1,13 +1,14 @@
 # Databricks notebook source
 # MAGIC %md
-# MAGIC # Ingestion Bronze — CRITER (comptages trafic Grand Lyon)
+# MAGIC # Ingestion Bronze — État du trafic / CRITER (Grand Lyon)
 # MAGIC
 # MAGIC Même famille de flux open data que celle déjà utilisée dans LyonFlow —
 # MAGIC ingérée ici indépendamment, sans réutiliser le code du projet LyonFlow.
 # MAGIC
-# MAGIC **TODO avant premier run :** renseigner le widget `wfs_typename` avec le
-# MAGIC nom exact de la couche CRITER sur https://data.grandlyon.com (portail WFS
-# MAGIC `metropole-de-lyon:...`), disponible publiquement sans clé API.
+# MAGIC Câblé par défaut sur le flux **État du trafic temps réel**
+# MAGIC (`pvo_patrimoine_voirie.pvotrafic`) — voir `docs/data_sources.md` pour le
+# MAGIC détail des deux jeux de données CRITER disponibles et vérifier lequel
+# MAGIC correspond à l'intégration déjà en place dans LyonFlow avant le premier run.
 
 # COMMAND ----------
 
@@ -18,10 +19,10 @@ from pyspark.sql import functions as F
 CATALOG = "lyonflow"
 SCHEMA = "bronze"
 TABLE = "criter_raw"
-WFS_BASE = "https://data.grandlyon.com/geoserver/metropole-de-lyon/ows"
+WFS_BASE = "https://data.grandlyon.com/fr/geoserv/metropole-de-lyon/ows/"
 
 dbutils.widgets.text("catalog", CATALOG, "Unity Catalog")
-dbutils.widgets.text("wfs_typename", "metropole-de-lyon:criter_XXX", "Nom de couche WFS CRITER (TODO)")
+dbutils.widgets.text("wfs_typename", "pvo_patrimoine_voirie.pvotrafic", "Nom de couche WFS trafic")
 catalog = dbutils.widgets.get("catalog")
 wfs_typename = dbutils.widgets.get("wfs_typename")
 
