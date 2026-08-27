@@ -30,9 +30,7 @@ SCHEMA = "bronze"
 TABLE = "criter_raw"
 
 dbutils.widgets.text("catalog", CATALOG, "Unity Catalog")
-dbutils.widgets.text("wfs_typename", WFS_TYPENAME, "Nom de couche WFS CRITER")
 catalog = dbutils.widgets.get("catalog")
-wfs_typename = dbutils.widgets.get("wfs_typename")
 
 spark.sql(f"CREATE CATALOG IF NOT EXISTS {catalog}")
 spark.sql(f"CREATE SCHEMA IF NOT EXISTS {catalog}.{SCHEMA}")
@@ -43,7 +41,7 @@ params = {
     "SERVICE": "WFS",
     "VERSION": "2.0.0",
     "request": "GetFeature",
-    "typename": wfs_typename,
+    "typename": WFS_TYPENAME,
     "outputFormat": "application/json",
     "SRSNAME": "EPSG:4326",
 }
@@ -55,33 +53,18 @@ payload = response.json()
 features = payload["features"]
 ingested_at = datetime.now(timezone.utc)
 
-records = []
-for f in features:
-    props = f.get("properties", {})
-    coords = (f.get("geometry") or {}).get("coordinates", [None, None])
-    records.append({
-        "gid": props.get("gid"),
-        "identifiantptm": props.get("identifiantptm"),
-        "positionnement": props.get("positionnement"),
-        "nom": props.get("nom"),
-        "typecapteur": props.get("typecapteur"),
-        "typepostemesure": props.get("typepostemesure"),
-        "nbvoies": props.get("nbvoies"),
-        "moyennejoursouvrable": props.get("moyennejoursouvrable"),
-        "debithorairemax": props.get("debithorairemax"),
-        "horairedebitmax": props.get("horairedebitmax"),
-        "anneereference": props.get("anneereference"),
-        "estvalide": props.get("estvalide"),
-        "lon": coords[0],
-        "lat": coords[1],
-    })
+records = [
+    {**f.get("properties", {}), "geometry": str(f.get("geometry"))}
+    for f in features
+]
 
 # COMMAND ----------
 
-# Certains champs (ex. `estvalide`) sont `None` sur l'ensemble des capteurs
-# pour ce batch — Spark ne peut pas inférer le type d'une colonne 100% nulle.
-# On les retire avant createDataFrame plutôt que de forcer un schéma explicite,
-# pour rester robuste si un futur batch a la même colonne partiellement remplie.
+# Certains champs (ex. estvalide) sont None sur l'ensemble des capteurs pour
+# ce batch — Spark ne peut pas inférer le type d'une colonne 100% nulle lors
+# du createDataFrame (CANNOT_DETERMINE_TYPE). On les retire avant construction
+# du DataFrame plutôt que de forcer un schéma explicite, pour rester robuste
+# si un futur batch a la colonne partiellement remplie.
 none_cols = {k for k in records[0] if all(r.get(k) is None for r in records)}
 records = [{k: v for k, v in r.items() if k not in none_cols} for r in records]
 

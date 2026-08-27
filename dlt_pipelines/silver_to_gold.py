@@ -57,6 +57,6 @@ def criter_site_stats():
         .select(
             "identifiantptm", "nom", "positionnement", "typecapteur",
             "nbvoies", "moyennejoursouvrable", "debithorairemax",
-            "horairedebitmax", "anneereference", "lon", "lat", "ingested_at",
+            "horairedebitmax", "anneereference", "geometry", "ingested_at",
         )
     )
