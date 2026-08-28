@@ -26,12 +26,13 @@
    - Clique **+** pour ajouter une tâche, **Depends on** : `ingest_velov`
    - Type : **Pipeline**
    - Sélectionne ton pipeline existant **`bronze to gold`** (celui déjà créé, ne pas en recréer un)
-5. **Schedule** (en haut à droite du job) :
+5. **Notifications** — onglet **Notifications** du job → **Add** → sur "On failure" → ton adresse email. Ça donne l'alerting automatique attendu en prod.
+6. **Schedule** (en haut à droite du job) :
    - Trigger type : **Scheduled**
    - Toutes les **30 minutes** pour commencer (pas 15 min tout de suite — laisse de la marge quota Free Edition, tu resserreras plus tard si stable)
    - Timezone : Europe/Paris
    - **Laisse le job en pause au début** (case "Paused" cochée) — tu le lanceras manuellement une première fois avant d'activer le auto-schedule
-6. **Save**
+7. **Save**
 
 ## 2. Premier run manuel (validation avant auto-schedule)
 
@@ -61,11 +62,21 @@ Les règles `expect_or_drop` sont déjà en place dans [`dlt_pipelines/bronze_to
 
 **Rien à coder ici.** Juste vérifier après quelques runs auto que les compteurs "expectations met/unmet" restent stables dans l'onglet **Tables** du pipeline — si un chiffre d'unmet explose d'un coup, ça vaut le coup de creuser (source de données changée, bug amont).
 
-## 5. Livrable Semaine 2 (check final)
+## 5. Preuves à capturer pour le portfolio (déjà préparées, juste à exécuter)
+
+Le reste — architecture visuelle, tests, CI, Time Travel, Z-Ordering — est déjà écrit dans le repo. Il ne reste que des actions à faire **dans Databricks** pour en avoir la preuve (screenshot) :
+
+- [ ] **Data lineage** — Catalog Explorer → une table gold → onglet **Lineage** → screenshot (voir [`docs/architecture.md`](architecture.md#gouvernance--lineage-unity-catalog))
+- [ ] **Time Travel** — exécuter [`sql/time_travel_demo.sql`](../sql/time_travel_demo.sql) une requête à la fois, screenshot de `DESCRIBE HISTORY` + d'un `VERSION AS OF`
+- [ ] **OPTIMIZE/Z-Order** — exécuter [`sql/optimize_tables.sql`](../sql/optimize_tables.sql), screenshot du résultat
+- [ ] **Spark UI** — pendant un run du pipeline DLT, ouvrir l'onglet Spark UI du cluster (Compute → cluster actif → Spark UI) et screenshot un DAG de stage
+
+## 6. Livrable Semaine 2 (check final)
 
 - [ ] Job `lyonflow-ingestion-and-pipeline` actif, tourne toutes les 30 min sans erreur
 - [ ] Job `lyonflow-criter-refresh` actif, hebdomadaire
+- [ ] Alerting on-failure configuré
 - [ ] Historique d'exécution visible (onglet **Runs** du job) — au moins 2-3 runs verts consécutifs
-- [ ] Capture d'écran de l'historique de runs pour le README/portfolio plus tard
+- [ ] 4 preuves de la section précédente capturées
 
 Une fois ces cases cochées → Semaine 2 terminée, passe à `docs/plan.md` Semaine 3 (MLflow).

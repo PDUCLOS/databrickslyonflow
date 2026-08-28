@@ -9,6 +9,9 @@ resources:
         quartz_cron_expression: "0 */30 * * * ?"
         timezone_id: Europe/Paris
         pause_status: PAUSED
+      email_notifications:
+        on_failure:
+          - ${var.alert_email}
       tasks:
         - task_key: ingest_velov
           notebook_task:

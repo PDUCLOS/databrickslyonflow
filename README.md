@@ -20,22 +20,21 @@ Aucune clé API, aucun compte requis. Endpoints dans [`docs/data_sources.md`](do
 
 ## Architecture
 
+![Architecture Medallion](docs/architecture.svg)
+
+Détail, gouvernance/lineage, nuance dimensionnement compute : [`docs/architecture.md`](docs/architecture.md).
+
+## Qualité & CI
+
+- Règles de qualité de données (`expect_or_drop`) dans [`dlt_pipelines/bronze_to_silver.py`](dlt_pipelines/bronze_to_silver.py).
+- Logique de ces règles miroir-testée en local/CI (sans dépendance Spark) : [`src/lyonflow_databricks/quality_rules.py`](src/lyonflow_databricks/quality_rules.py) + [`tests/`](tests/). CI GitHub Actions sur chaque push : [`.github/workflows/ci.yml`](.github/workflows/ci.yml).
+- Optimisation Delta (Z-Ordering) : [`sql/optimize_tables.sql`](sql/optimize_tables.sql).
+- Démo Time Travel Delta Lake : [`sql/time_travel_demo.sql`](sql/time_travel_demo.sql).
+
+```bash
+pip install pytest
+pytest -v
 ```
-Vélo'v GBFS (JSON, 1 min)  ─┐
-                             ├─► Bronze (Delta, raw, append-only)
-CRITER comptages trafic  ───┘
-
-Bronze ──[DLT: nettoyage, dédup, typage]──► Silver (Delta, qualité contrôlée)
-
-Silver ──[DLT: agrégations horaires/journalières]──► Gold (Delta, tables métier)
-
-Gold ──► Databricks SQL / Genie (dashboard, questions langage naturel)
-Gold ──► MLflow (entraînement modèle prédiction) ──► Model Registry ──► Model Serving (endpoint temps réel)
-
-Databricks Workflows orchestre l'ensemble · Unity Catalog gouverne l'ensemble
-```
-
-Détail dans [`docs/architecture.md`](docs/architecture.md).
 
 ## Structure du repo
 
@@ -46,8 +45,11 @@ lyonflow-databricks/
 ├── notebooks/                  # Ingestion Bronze (Vélo'v, CRITER)
 ├── dlt_pipelines/              # Pipelines déclaratifs Bronze→Silver→Gold
 ├── ml/                         # Entraînement MLflow + exemple appel Model Serving
-├── sql/                        # Requêtes Databricks SQL (dashboard Gold)
-└── docs/                       # Architecture, sources de données, avancement
+├── sql/                        # Requêtes dashboard, optimisation, Time Travel
+├── src/lyonflow_databricks/    # Logique de qualité testable (miroir des règles DLT)
+├── tests/                      # Tests pytest (CI)
+├── .github/workflows/          # CI
+└── docs/                       # Architecture, vision, sources de données, avancement
 ```
 
 ## Statut d'avancement

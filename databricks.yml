@@ -8,6 +8,9 @@ variables:
   catalog:
     description: Unity Catalog catalog name
     default: lyonflow
+  alert_email:
+    description: Email address notified on job failure
+    default: patrice.noel.duclos@gmail.com
 
 targets:
   dev:
